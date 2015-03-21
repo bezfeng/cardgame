@@ -43,9 +43,10 @@ io.sockets.on('connection', function (socket) {
       playerList = playerList + table.players[i].name + ", ";
     }
     
-    socket.emit("joinedTable", {message: "Joined Table: " + table.name +
-                                         "\nPlayers: " + playerList + 
-                                         "\nHand: " + handString});
+    socket.emit("joinedTable", {
+      message: "Joined Table: " + table.name + "\nPlayers: " + playerList + "\nHand: " + handString,
+      hand: hand,
+    });
   });
 
 });

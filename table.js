@@ -15,6 +15,12 @@ Table.prototype.addPlayer = function(playerID, playerName) {
   // TODO: Check if player has not already joined the table
   this.players.push(player);
   this.engine.drawCard(player);
+  
+  // If this is the first player to join, assume for now he gets to start
+  // TODO: rework starting player logic
+  if (this.players.length === 1) {
+    this.engine.drawCard(player);
+  }
 };
 
 Table.prototype.getPlayer = function(playerId) {

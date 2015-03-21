@@ -19,6 +19,13 @@
       <div>
         <textarea id="textbox" rows="4" cols="50"></textarea>
       </div>
+      <div id = "actionArea">
+        <button id="playCardButton" disabled="true">Play Card</button>
+      </div>
+      <div id="cardArea">
+        <form id="cardList" action="">
+        </form>
+      </div>
     </div>
   </body>
 </html>
@@ -28,11 +35,18 @@
 
   socket.on("joinedTable", function(data){
     $('#textbox').val(data.message);
+    var hand = data.hand;
+    $('.cardInput').remove();
+    $('#playCardButton').prop("disabled", false);
+    for (var i = 0; i < hand.length; i++) {
+      var name = hand[i].name;
+      var shortCode = hand[i].shortCode;
+      $('#cardList').append('<input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/>');
+    }
   });
 
   $("#joinButton").click(function(){
     socket.emit("playerjoin",{playerName:$('#playerName').val()});
   });
-
 
 </script>
