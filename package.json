@@ -1,0 +1,12 @@
+{
+  "name": "cardgame",
+  "description": "",
+  "version": "0.0.1",
+  "author": {
+    "name": "Eric"
+  },
+  "dependencies": {
+    "express": "latest",
+    "socket.io": "latest"
+  }
+}
