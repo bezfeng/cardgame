@@ -71,11 +71,13 @@ io.sockets.on('connection', function (socket) {
     
     var currentName = table.activePlayer.name;
     var targetName = table.getPlayer(data.targetPlayerId).name;    
-    var message = table.cardPlayed(data.targetPlayerId, socket.id, data);
+    var result = table.cardPlayed(data.targetPlayerId, socket.id, data);
     
     io.sockets.emit("cardPlayed", {
-      message: message,
+      message: result.message,
     });
+    if (result.courtierHand)
+      socket.emit("courtierResult", {card: result.courtierResult});
     
     // Only send the hand to the corresponding player instead of a broadcast to prevent cheating. 
     for (var i = 0; i < table.players.length; i++){ 

@@ -66,11 +66,14 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
       targetImmune = true;
     }
   }
+
+  var result = {message:"", courtierResult:null};
+  result.message = "** " + sourcePlayer.name + " played " + card.name + " against " + targetPlayer.name + " **";
   
   if (targetImmune) {
-    return;
+    return result;
   }
-  
+
   // Guard - Guess the card
   var guessMessage;
   if (card.shortCode == "g") {
@@ -85,11 +88,13 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
       guessMessage += "WRONG!";
     }
     guessMessage += " **";
+
+    result.message += "\n" + guessMessage;
   }
   
   // Courtier - Show sourcePlayer targetPlayer's cards
   if (card.shortCode == "c") {
-    // ??
+    result.courtierResult = targetPlayer.hand[0];
   }
   
   // Diplomat - Compare hands, higher wins
@@ -132,12 +137,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     setPlayerLose(sourcePlayer);
   }
   
-  var message = "** " + sourcePlayer.name + " played " + card.name + " against " + targetPlayer.name + " **";
-  if (card.shortCode == "g") {
-    message += "\n" + guessMessage;
-  }
-  
-  return message;
+  return result;
 }
 
 Engine.prototype.setPlayerLose = function(player) {

@@ -44,7 +44,7 @@
 </html>
 
 <script>
-  var socket = io.connect("http://localhost:8080");
+  var socket = io.connect("http://76.187.225.128:8080");
   
   socket.on("joinedTable", function(data){
     $('#textbox').val(data.message);
@@ -98,6 +98,10 @@
     $('#textbox').val($('#textbox').val() + "\n" + data.message);
     $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
   });
+
+  socket.on("courtierResult", function(data){
+    $('#textbox').val($('#textbox').val() + "\nTarget Player's hand: " + data.card);
+  })
   
   $('#playCardButton').click(function() {
     var shortCode = $('input.cardInput:checked').val();
