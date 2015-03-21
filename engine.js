@@ -21,8 +21,8 @@ Engine.prototype._createPack = function() {
   var cardTypes = Card.types();
   for (var i = 0; i < cardTypes.length; i++) {
     var c = new Card(cardTypes[i]);
-    for (var i = 0; i < Card.countInDeck(c.value); i++) {
-      pack.push(new Card(cardTypes[i]))
+    for (var j = 0; j < Card.countInDeck(c.value); j++) {
+      pack.push(new Card(cardTypes[j]))
     }
   }
   
