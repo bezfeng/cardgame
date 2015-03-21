@@ -1,5 +1,8 @@
-function Player(playerID){
+function Player(playerID, name){
   this.id = playerID;
-  this.name = "";
+  this.name = name;
   this.hand = [];
+  this.status;
 }
+
+module.exports = Player;
