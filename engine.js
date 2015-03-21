@@ -68,7 +68,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   }
   
   if (targetImmune) {
-    return;
+    return targetPlayer.name " is protected by the Shugenja!";
   }
   
   // Guard - Guess the card
