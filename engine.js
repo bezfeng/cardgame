@@ -134,6 +134,8 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     setPlayerLose(sourcePlayer);
   }
   
+  var message = "** " + sourcePlayer.name + " played " + card.name + " against " + targetPlayer.name + " **";
+  return message;
 }
 
 module.exports = Engine;

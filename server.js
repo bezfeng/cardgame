@@ -57,18 +57,38 @@ io.sockets.on('connection', function (socket) {
       players: table.players,
     });
     
+    // Let the first player know that he is the active player
+    // TODO: make this less dumb
+    if (table.players.length == 1) {
+      io.sockets.emit("turnBegan", {
+        activePlayer: table.activePlayer,
+      });   
+    }
   });
   
   socket.on('playCard', function(data){
     console.log("card played: " + JSON.stringify(data.cardCode) + " against " + data.targetPlayerId);
-    table.cardPlayed(data.targetPlayerId, socket.id, data);
+    
+    var currentName = table.activePlayer.name;
+    var targetName = table.getPlayer(data.targetPlayerId).name;    
+    var message = table.cardPlayed(data.targetPlayerId, socket.id, data);
+    
+    io.sockets.emit("cardPlayed", {
+      message: message,
+    });
+    
+    // Only send the hand to the corresponding player instead of a broadcast to prevent cheating. 
     for (var i = 0; i < table.players.length; i++){ 
       var player = table.players[i];
       io.to(player.id).emit("turnEnded", {
         hand: player.hand,
       });
-
     }
+    
+    // Start a new turn
+    io.sockets.emit("turnBegan", {
+      activePlayer: table.activePlayer,
+    });   
   });
 
 });

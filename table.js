@@ -7,6 +7,7 @@ function Table(tableID){
   this.engine = new Engine();
   this.players = [];
   this.playerlimit = 4;
+  this.activePlayer;
 }
 
 Table.prototype.addPlayer = function(playerID, playerName) {
@@ -20,6 +21,7 @@ Table.prototype.addPlayer = function(playerID, playerName) {
   // TODO: rework starting player logic
   if (this.players.length === 1) {
     this.engine.drawCard(player);
+    this.activePlayer = player;
   }
   
   return player;
@@ -36,10 +38,32 @@ Table.prototype.getPlayer = function(playerId) {
   return player;
 };
 
+Table.prototype.getPlayerIndex = function(playerId) {
+  for(var i = 0; i < this.players.length; i++) {
+    if(this.players[i].id == playerId) {
+      return i;
+    }
+  }
+};
+
 Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
-  var targetPlayer = this.getPlayer(targetPlayerId);
-  var sourcePlayer = this.getPlayer(sourcePlayerId);
-  this.engine.play(targetPlayer, sourcePlayer, action);
+  var targetIndex = this.getPlayerIndex(targetPlayerId);
+  var sourceIndex = this.getPlayerIndex(sourcePlayerId);
+  var targetPlayer = this.players[targetIndex];
+  var sourcePlayer = this.players[sourceIndex];
+  
+  var message = this.engine.play(targetPlayer, sourcePlayer, action);
+  
+  // Find the index of the current player and increment to get the next player
+  if (sourceIndex + 1 < this.players.length) {
+    this.activePlayer = this.players[sourceIndex + 1];
+  } else {
+    this.activePlayer = this.players[0];
+  }
+  
+  this.engine.drawCard(this.activePlayer);
+  
+  return message;
 }
 
 module.exports = Table;
