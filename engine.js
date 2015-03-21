@@ -54,6 +54,14 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   var card = new Card(action.cardCode);
   this.discard.push(card);
   
+  // Remove card from player's hand
+  for (var i = 0; i < sourcePlayer.hand.length; i++) {
+    if (sourcePlayer.hand[i].shortCode == card.shortCode) {
+      sourcePlayer.hand.splice(i, 1);
+      break;
+    }
+  }
+  
   // Remove the sourcePlayer from the immune list if they were previously on it.
   // If targetPlayer is on the immune list, do nothing this turn.
   var targetImmune = false;

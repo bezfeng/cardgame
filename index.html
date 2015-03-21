@@ -39,12 +39,11 @@
     
     // Set up the starting cards
     var hand = data.hand;
-    $('.cardInput').remove();
     $('#playCardButton').prop("disabled", false);
     for (var i = 0; i < hand.length; i++) {
       var name = hand[i].name;
       var shortCode = hand[i].shortCode;
-      $('#cardList').append('<input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/>');
+      $('#cardList').append('<span class="cardSpan"><input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/></span>');
     }
     
     // Set up other players
@@ -60,6 +59,16 @@
   socket.on("playerJoined", function(data){
     var newPlayer = data.newPlayer;
     $('#targetPlayerList').append('<option value="'+newPlayer.id+'">'+newPlayer.name+'</option>');
+  });
+  
+  socket.on("turnEnded", function(data){
+    $('.cardSpan').remove();
+    var hand = data.hand;
+    for (var i = 0; i < hand.length; i++) {
+      var name = hand[i].name;
+      var shortCode = hand[i].shortCode;
+      $('#cardList').append('<span class="cardSpan"><input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/></span>');
+    }
   });
   
   $('#playCardButton').click(function() {

@@ -62,7 +62,13 @@ io.sockets.on('connection', function (socket) {
   socket.on('playCard', function(data){
     console.log("card played: " + JSON.stringify(data.cardCode) + " against " + data.targetPlayerId);
     table.cardPlayed(data.targetPlayerId, socket.id, data);
-    io.sockets.emit("turnEnded", {});
+    for (var i = 0; i < table.players.length; i++){ 
+      var player = table.players[i];
+      io.to(player.id).emit("turnEnded", {
+        hand: player.hand,
+      });
+
+    }
   });
 
 });
