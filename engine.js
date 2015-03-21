@@ -1,13 +1,5 @@
 var Card = require("./card.js");
 
-// Helper method
-function setPlayerLose(player) {
-  player.status = "lose";
-  if (player.hand[0]) {
-    this.discard.push(player.hand[0]);
-  }
-}
-
 // Engine object
 function Engine() {
   this.pack = this._shufflePack(this._createPack());
@@ -146,6 +138,13 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   }
   
   return message;
+}
+
+Engine.prototype.setPlayerLose = function(player) {
+  player.status = "lose";
+  if (player.hand[0]) {
+    this.discard.push(player.hand[0]);
+  }
 }
 
 module.exports = Engine;
