@@ -48,5 +48,9 @@ io.sockets.on('connection', function (socket) {
       hand: hand,
     });
   });
+  
+  socket.on('playCard', function(data){
+    console.log("card played: " + JSON.stringify(data.card));
+  });
 
 });
