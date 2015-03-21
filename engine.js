@@ -119,6 +119,8 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     sourcePlayer.hand = targetHand;
   }
   
+  // Sensei - does nothing
+  
   // Princess - auto lose
   if (card.shortCode == "p") {
     setPlayerLose(sourcePlayer);

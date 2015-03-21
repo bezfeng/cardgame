@@ -49,7 +49,7 @@ function Card(shortCode) {
   }
 }
 
-Card.prototype.countInDeck = function(cardValue) {
+Card.countInDeck = function(cardValue) {
   if (cardValue === 1) {
     return 5;
   } else if (cardValue > 1 && cardValue <= 5) {
@@ -59,7 +59,7 @@ Card.prototype.countInDeck = function(cardValue) {
   }
 }
 
-Card.prototype.types = function() {
+Card.types = function() {
   var array = ["g", "c", "d", "s", "h", "m", "s", "p"];
   return array;
 }
