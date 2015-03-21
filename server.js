@@ -88,7 +88,11 @@ io.sockets.on('connection', function (socket) {
     // Start a new turn
     io.sockets.emit("turnBegan", {
       activePlayer: table.activePlayer,
-    });   
+    }); 
+    
+    for (var i = 0; i < table.engine.pack.length; i++) {
+      console.log(table.engine.pack[i].name); 
+    }
   });
 
 });

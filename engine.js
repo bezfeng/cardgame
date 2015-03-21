@@ -22,7 +22,7 @@ Engine.prototype._createPack = function() {
   for (var i = 0; i < cardTypes.length; i++) {
     var c = new Card(cardTypes[i]);
     for (var j = 0; j < Card.countInDeck(c.value); j++) {
-      pack.push(new Card(cardTypes[j]))
+      pack.push(new Card(cardTypes[i]));
     }
   }
   
@@ -80,13 +80,19 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   }
   
   // Guard - Guess the card
+  var guessMessage;
   if (card.shortCode == "g") {
-    var guess = action.guess;
+    var guess = new Card(action.guess);
     var targetPlayerCard = targetPlayer.hand[0];
-    if (guess == targetPlayerCard) {
+    guessMessage = "** " + sourcePlayer.name + " guesses " + guess.name + " and is ";
+    if (guess.shortCode == targetPlayerCard.shortCode) {
       targetPlayer.status = "lose";
       this.discard.push(targetPlayerCard);
+      guessMessage += "CORRECT!";
+    } else {
+      guessMessage += "WRONG!";
     }
+    guessMessage += " **";
   }
   
   // Courtier - Show sourcePlayer targetPlayer's cards
@@ -135,6 +141,10 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   }
   
   var message = "** " + sourcePlayer.name + " played " + card.name + " against " + targetPlayer.name + " **";
+  if (card.shortCode == "g") {
+    message += "\n" + guessMessage;
+  }
+  
   return message;
 }
 

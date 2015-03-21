@@ -17,7 +17,7 @@
         <button id="joinButton">Join Table</button>
       </div>
       <div>
-        <textarea id="textbox" rows="4" cols="50"></textarea>
+        <textarea id="textbox" rows="16" cols="50"></textarea>
       </div>
       <div id = "actionArea">
         <button id="playCardButton" disabled="true">Play Card</button>
@@ -80,7 +80,7 @@
       $('#playCardButton').prop("disabled", true);
     }
     
-    $('#textbox').val($('#textbox').val() + "\nNew turn, active player is " + data.activePlayer.name);
+    $('#textbox').val($('#textbox').val() + "\n\nNew turn, active player is " + data.activePlayer.name);
     $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
   });
   
@@ -102,10 +102,12 @@
   $('#playCardButton').click(function() {
     var shortCode = $('input.cardInput:checked').val();
     var targetPlayerId = $('#targetPlayerList').val();
+    var guessCode = $('#guessList').val();
     if (shortCode && targetPlayerId) {
       socket.emit("playCard", { 
         cardCode: shortCode,
         targetPlayerId: targetPlayerId,
+        guess: guessCode,
       });
     }
   });
