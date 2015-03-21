@@ -50,7 +50,7 @@ function Card(shortCode) {
 }
 
 Card.prototype.countInDeck = function(cardValue) {
-  if (cardValue == 1) {
+  if (cardValue === 1) {
     return 5;
   } else if (cardValue > 1 && cardValue <= 5) {
     return 2;

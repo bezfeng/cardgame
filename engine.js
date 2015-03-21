@@ -4,7 +4,6 @@ function Engine() {
   this.pack = this._shufflePack(this._createPack());
 }
 
-//sets up two times 52 cards as a pack
 Engine.prototype._createPack = function() {
   var pack = [];
   
@@ -28,6 +27,14 @@ Engine.prototype._shufflePack = function(pack) {
     tempi = pack[i]; tempj = pack[j]; pack[i] = tempj; pack[j] = tempi;
   }
   return pack;
+}
+
+Engine.prototype.reset = function() {
+  this.pack = this._shufflePack(this._createPack());
+}
+
+Engine.prototype.drawCard = function() {
+  return this.pack.pop();
 }
 
 module.exports = Engine;
