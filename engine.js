@@ -51,7 +51,7 @@ Engine.prototype.drawCard = function(player) {
 }
 
 Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
-  var card = action.card;
+  var card = new Card(action.cardCode);
   this.discard.push(card);
   
   // Remove the sourcePlayer from the immune list if they were previously on it.

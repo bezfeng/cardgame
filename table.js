@@ -21,6 +21,8 @@ Table.prototype.addPlayer = function(playerID, playerName) {
   if (this.players.length === 1) {
     this.engine.drawCard(player);
   }
+  
+  return player;
 };
 
 Table.prototype.getPlayer = function(playerId) {
@@ -33,5 +35,11 @@ Table.prototype.getPlayer = function(playerId) {
   }
   return player;
 };
+
+Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
+  var targetPlayer = this.getPlayer(targetPlayerId);
+  var sourcePlayer = this.getPlayer(sourcePlayerId);
+  this.engine.play(targetPlayer, sourcePlayer, action);
+}
 
 module.exports = Table;

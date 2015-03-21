@@ -21,6 +21,7 @@
       </div>
       <div id = "actionArea">
         <button id="playCardButton" disabled="true">Play Card</button>
+        <select id="targetPlayerList"></select>
       </div>
       <div id="cardArea">
         <form id="cardList" action="">
@@ -35,6 +36,8 @@
   
   socket.on("joinedTable", function(data){
     $('#textbox').val(data.message);
+    
+    // Set up the starting cards
     var hand = data.hand;
     $('.cardInput').remove();
     $('#playCardButton').prop("disabled", false);
@@ -43,12 +46,30 @@
       var shortCode = hand[i].shortCode;
       $('#cardList').append('<input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/>');
     }
+    
+    // Set up other players
+    var players = data.players;
+    for (var i = 0; i < players.length; i++) {
+      var player = players[i];
+      if (player.id != socket.id) {
+        $('#targetPlayerList').append('<option value="'+player.id+'">'+player.name+'</option>');
+      }
+    }
+  });
+  
+  socket.on("playerJoined", function(data){
+    var newPlayer = data.newPlayer;
+    $('#targetPlayerList').append('<option value="'+newPlayer.id+'">'+newPlayer.name+'</option>');
   });
   
   $('#playCardButton').click(function() {
     var shortCode = $('input.cardInput:checked').val();
+    var targetPlayerId = $('#targetPlayerList').val();
     if (shortCode) {
-      socket.emit("playCard", { card: shortCode })
+      socket.emit("playCard", { 
+        cardCode: shortCode,
+        targetPlayerId: targetPlayerId,
+      });
     }
   });
 
