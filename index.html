@@ -3,45 +3,64 @@
   <head>
     <title>Card Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-    <div id="wrap">
-      Hello World!
-      <br>
-      <br>
+    <div id="wrap" class="container-fluid">
+      <h3>Card Game</h3>
       <div>
         <label>Player Name</label>
         <input type="text" id="playerName">
         <button id="joinButton">Join Table</button>
       </div>
       <div>
-        <textarea id="textbox" rows="16" cols="50"></textarea>
+        <textarea id="textbox" rows="10" cols="50"></textarea>
       </div>
       <div id = "actionArea">
         <button id="playCardButton" disabled="true">Play Card</button>
-        Target: <select id="targetPlayerList"></select>
-        Guess (for Guard):
-        <select id="guessList">
-          <option value="c">Courtier</option>
-          <option value="d">Diplomat</option>
-          <option value="s">Shugenja</option>
-          <option value="h">Hatamoto</option>
-          <option value="m">Manipulator</option>
-          <option value="s">Sensei</option>
-          <option value="p">Princess</option>
-        </select>
+        <div id="targetList" style="visibility: hidden">
+          <label>Target:</label>
+          <select id="targetPlayerList"></select>
+        </div>
+        <div id="guardGuess" style="visibility: hidden">
+          <label>Guess (for Guard):</label>
+          <select id="guessList">
+            <option value="c">Courtier</option>
+            <option value="d">Diplomat</option>
+            <option value="sh">Shugenja</option>
+            <option value="h">Hatamoto</option>
+            <option value="m">Manipulator</option>
+            <option value="s">Sensei</option>
+            <option value="p">Princess</option>
+          </select>
+        </div>
       </div>
-      <br/>
-      <div id="cardArea" style="border: 1px black solid">
-        Hand:
-        <form id="cardList" action="">
-        </form>
+      <h4>Hand:</h4>
+      <div id="cardArea" class="row">
       </div>
     </div>
   </body>
 </html>
+
+<style type="text/css">
+  .cardInput {
+    background-color: silver;
+    margin: 5px;
+    height: 150px;
+  }
+
+  .cardInput:hover {
+    background: grey;
+    cursor: pointer;
+  }
+
+  .selected {
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.05) inset, 0px 0px 8px rgba(82, 168, 236, 0.8);
+  }
+</style>
 
 <script>
   var socket = io.connect("http://76.187.225.128:8080");
@@ -54,8 +73,9 @@
     for (var i = 0; i < hand.length; i++) {
       var name = hand[i].name;
       var shortCode = hand[i].shortCode;
-      $('#cardList').append('<span class="cardSpan"><input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/></span>');
+      $('#cardArea').append('<div id=card'+i+' class="cardInput col-xs-2" name="card" value="'+shortCode+'">' + name + '</div>');
     }
+    addCardClickEvents();
     
     // Set up other players
     var players = data.players;
@@ -90,8 +110,9 @@
     for (var i = 0; i < hand.length; i++) {
       var name = hand[i].name;
       var shortCode = hand[i].shortCode;
-      $('#cardList').append('<span class="cardSpan"><input class="cardInput" type="radio" name="card"" value="'+shortCode+'">' + name + '<br/></span>');
+      $('#cardArea').append('<div id=card'+i+' class="cardInput col-xs-2" name="card" value="'+shortCode+'">' + name + '</div>');
     }
+    addCardClickEvents();
   });
   
   socket.on("cardPlayed", function(data){
@@ -104,20 +125,63 @@
   })
   
   $('#playCardButton').click(function() {
-    var shortCode = $('input.cardInput:checked').val();
-    var targetPlayerId = $('#targetPlayerList').val();
-    var guessCode = $('#guessList').val();
-    if (shortCode && targetPlayerId) {
-      socket.emit("playCard", { 
-        cardCode: shortCode,
-        targetPlayerId: targetPlayerId,
-        guess: guessCode,
-      });
+    if ($('#cardArea').find('.selected').length > 1)
+      alert("You can only play one card ಠ_ಠ");
+    else
+    {
+      if ($('#cardArea').find('.selected')[0])
+      {
+        var shortCode = $('#cardArea').find('.selected')[0].getAttribute("value");
+        console.log(shortCode);
+        var targetPlayerId = $('#targetPlayerList').val();
+        var guessCode = $('#guessList').val();
+        if (shortCode && targetPlayerId) {
+          socket.emit("playCard", { 
+            cardCode: shortCode,
+            targetPlayerId: targetPlayerId,
+            guess: guessCode,
+          });
+        }
+      }
     }
   });
 
-  $("#joinButton").click(function(){
+  $('#joinButton').click(function(){
     socket.emit("playerjoin", { playerName:$('#playerName').val() });
   });
+
+  function addCardClickEvents() {
+    $('#card0').click(function(){
+      console.log("selected " + this.id);
+      $(this).addClass("selected");
+      $('#card1').removeClass("selected");
+
+      console.log($(this).attr("value"));
+      if ($(this).attr("value") == "g")
+        $('#guardGuess').css("visibility", "visible");
+      else
+        $('#guardGuess').css("visibility", "hidden");
+      if ($(this).attr("value") == "g" || $(this).attr("value") == "c" || $(this).attr("value") == "d" || $(this).attr("value") == "h" || $(this).attr("value") == "m")
+        $('#targetList').css("visibility", "visible");
+      else
+        $('#targetList').css("visibility", "hidden");
+    });
+
+    $('#card1').click(function(){
+      console.log("selected " + this.id);
+      $(this).addClass("selected");
+      $('#card0').removeClass("selected");
+
+      console.log($(this).attr("value"));
+      if ($(this).attr("value") == "g")
+        $('#guardGuess').css("visibility", "visible");
+      else
+        $('#guardGuess').css("visibility", "hidden");
+      if ($(this).attr("value") == "g" || $(this).attr("value") == "c" || $(this).attr("value") == "d" || $(this).attr("value") == "h" || $(this).attr("value") == "m")
+        $('#targetList').css("visibility", "visible");
+      else
+        $('#targetList').css("visibility", "hidden");
+    });
+  }
 
 </script>
