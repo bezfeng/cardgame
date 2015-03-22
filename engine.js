@@ -2,9 +2,7 @@ var Card = require("./card.js");
 
 // Engine object
 function Engine() {
-  this.pack = this._shufflePack(this._createPack());
-  this.discard = [];
-  this.immunePlayers = [];
+  this.reset();
 }
 
 Engine.prototype._createPack = function() {
@@ -34,6 +32,8 @@ Engine.prototype._shufflePack = function(pack) {
 Engine.prototype.reset = function() {
   this.pack = this._shufflePack(this._createPack());
   this.discard = [];
+  this.immunePlayers = [];
+  this.secretCard = this.pack.pop();
 }
 
 Engine.prototype.drawCard = function(player) {
@@ -103,9 +103,13 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     var targetPlayerCard = targetPlayer.hand[0];
     var sourcePlayerCard = sourcePlayer.hand[0];
     
+    console.log("showdown: " + targetPlayerCard.value + " vs " + sourcePlayerCard.value);
+    
     if (targetPlayerCard.value > sourcePlayerCard.value) {
+      console.log("target wins");
       this.setPlayerLose(sourcePlayer);
-    } else if (sourcePlayerCard.value < targetPlayerCard.value) {
+    } else if (sourcePlayerCard.value > targetPlayerCard.value) {
+      console.log("source wins");
       this.setPlayerLose(targetPlayer);
     }
   }
@@ -119,9 +123,19 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   // Hatamoto - targetPlayer drops all cards and picks a new one
   if (card.shortCode == "h") {
     while(targetPlayer.hand.length > 0) {
-      this.discard.push(targetPlayer.hand.pop());
+      var discardedCard = targetPlayer.hand.pop();
+      this.discard.push(discardedCard);
+      
+      // Discarding the princess is a loss
+      if (discardedCard.shortCode == "p") {
+        this.setPlayerLose(targetPlayer);
+      }
     }
-    targetPlayer.hand.push(this.pack.pop());
+    if (this.pack.length == 0) {
+      targerPlayer.hand.push(this.secretCard);
+    } else {
+      targetPlayer.hand.push(this.pack.pop()); 
+    }
   }
   
   // Manipulator - swap hands
@@ -142,6 +156,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
 }
 
 Engine.prototype.setPlayerLose = function(player) {
+  console.log(player.name + " has just lost");
   player.status = "lose";
   if (player.hand[0]) {
     this.discard.push(player.hand[0]);

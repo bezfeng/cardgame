@@ -45,7 +45,6 @@ io.sockets.on('connection', function (socket) {
       var player = table.players[i];
       playerList = playerList + player.name + ", ";
       if (player.id != socket.id) {
-        console.log("emitting to " + player.id)
         io.to(player.id).emit("playerJoined", { newPlayer: newPlayer })
       }
     }
@@ -76,8 +75,10 @@ io.sockets.on('connection', function (socket) {
     io.sockets.emit("cardPlayed", {
       message: result.message,
     });
-    if (result.courtierResult)
+    
+    if (result.courtierResult && !result.gameOver) {
       socket.emit("courtierResult", {card: result.courtierResult});
+    }
     
     // Only send the hand to the corresponding player instead of a broadcast to prevent cheating. 
     for (var i = 0; i < table.players.length; i++){ 
@@ -90,11 +91,7 @@ io.sockets.on('connection', function (socket) {
     // Start a new turn
     io.sockets.emit("turnBegan", {
       activePlayer: table.activePlayer,
+      cardsRemaining: table.engine.pack.length,
     }); 
-    
-    for (var i = 0; i < table.engine.pack.length; i++) {
-      console.log(table.engine.pack[i].name); 
-    }
   });
-
 });
