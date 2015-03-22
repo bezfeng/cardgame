@@ -44,7 +44,6 @@ Engine.prototype.drawCard = function(player) {
 
 Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   var card = new Card(action.cardCode);
-  this.discard.push(card);
   
   // Remove card from player's hand
   for (var i = 0; i < sourcePlayer.hand.length; i++) {
@@ -53,22 +52,30 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
       break;
     }
   }
+  this.discard.push(card);
   
   // Remove the sourcePlayer from the immune list if they were previously on it.
   // If targetPlayer is on the immune list, do nothing this turn.
   var targetImmune = false;
-  for (var i = 0; i < this.immunePlayers.length; i++) {
-    var player = this.immunePlayers[i];
-    if (player.id == sourcePlayer.id) {
-      this.immunePlayers.splice(i, 1);
-    }
-    if (player.id == targetPlayer.id) {
-      targetImmune = true;
-    }
+  if (targetPlayer) {
+    for (var i = 0; i < this.immunePlayers.length; i++) {
+      var player = this.immunePlayers[i];
+      if (player.id == sourcePlayer.id) {
+        this.immunePlayers.splice(i, 1);
+      }
+      if (player.id == targetPlayer.id) {
+        targetImmune = true;
+      }
+    } 
   }
 
   var result = {};
-  result.message = "** " + sourcePlayer.name + " played " + card.name + " against " + targetPlayer.name + " **";
+  result.message = "** " + sourcePlayer.name + " played " + card.name;
+  if (targetPlayer) {
+    result.message += " against " + targetPlayer.name + " **";
+  } else {
+    result.message += " **";
+  }
   
   if (targetImmune) {
     result.message += "\n" + targetPlayer.name + " is protected by the Shugenja!";
@@ -83,7 +90,6 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     guessMessage = "** " + sourcePlayer.name + " guesses " + guess.name + " and is ";
     if (guess.shortCode == targetPlayerCard.shortCode) {
       this.setPlayerLose(targetPlayer);
-      this.discard.push(targetPlayerCard);
       guessMessage += "CORRECT!";
     } else {
       guessMessage += "WRONG!";
@@ -152,15 +158,17 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     this.setPlayerLose(sourcePlayer);
   }
   
+  result.message += "\n" + this.discard[this.discard.length - 1].name + " was added to the discard pile";
+  
   return result;
 }
 
 Engine.prototype.setPlayerLose = function(player) {
   console.log(player.name + " has just lost");
   player.status = "lose";
-  if (player.hand[0]) {
-    this.discard.push(player.hand[0]);
-  }
+  var card = player.hand.pop();
+  this.discard.push(card);
+  return card; 
 }
 
 module.exports = Engine;

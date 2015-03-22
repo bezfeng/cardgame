@@ -49,10 +49,15 @@ Table.prototype.getPlayerIndex = function(playerId) {
 };
 
 Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
-  var targetIndex = this.getPlayerIndex(targetPlayerId);
   var sourceIndex = this.getPlayerIndex(sourcePlayerId);
-  var targetPlayer = this.players[targetIndex];
   var sourcePlayer = this.players[sourceIndex];
+  
+  var targetIndex;
+  var targetPlayer;
+  if (targetPlayerId && targetPlayerId != null) {
+    targetIndex = this.getPlayerIndex(targetPlayerId);
+    targetPlayer = this.players[targetIndex];
+  }
   
   var result = this.engine.play(targetPlayer, sourcePlayer, action);
   
@@ -90,6 +95,7 @@ Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
     winner = nonLosers[0];
   }
   
+  // If we have a winner, clean up the game. Otherwise, pick the next active player.
   if (winner) {
     // TODO this is unnecessary, we never use the status
     winner.status = "win";

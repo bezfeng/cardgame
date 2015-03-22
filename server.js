@@ -30,14 +30,6 @@ io.sockets.on('connection', function (socket) {
     console.log("socket data received: " + data.playerName);
     var newPlayer = table.addPlayer(socket.id, data.playerName);
 
-    console.log("Player in table " + JSON.stringify(table.players));
-    
-    var hand = table.getPlayer(socket.id).hand;
-    var handString = "";
-    for (var i = 0; i < hand.length; i++) {
-      handString = handString + hand[i].name + ", ";
-    }
-    
     // Tell all other players to add a new player to their UI
     // Also keep a running string of all the players in the room
     var playerList = "";
@@ -51,25 +43,21 @@ io.sockets.on('connection', function (socket) {
     
     // Configure the new player's initial UI
     socket.emit("joinedTable", {
-      message: "Joined Table: " + table.name + "\nPlayers: " + playerList + "\nHand: " + handString,
-      hand: hand,
+      message: "Joined Table: " + table.name + "\nPlayers: " + playerList + "\nActive player is " + table.activePlayer.name,
+      hand: table.getPlayer(socket.id).hand,
       players: table.players,
     });
     
     // Let the first player know that he is the active player
     // TODO: make this less dumb
     if (table.players.length == 1) {
-      io.sockets.emit("turnBegan", {
+      socket.emit("turnBegan", {
         activePlayer: table.activePlayer,
       });   
     }
   });
   
   socket.on('playCard', function(data){
-    console.log("card played: " + JSON.stringify(data.cardCode) + " against " + data.targetPlayerId);
-    
-    var currentName = table.activePlayer.name;
-    var targetName = table.getPlayer(data.targetPlayerId).name;    
     var result = table.cardPlayed(data.targetPlayerId, socket.id, data);
     
     io.sockets.emit("cardPlayed", {
@@ -86,12 +74,12 @@ io.sockets.on('connection', function (socket) {
       io.to(player.id).emit("turnEnded", {
         hand: player.hand,
       });
+      
+      // Start a new turn
+      io.to(player.id).emit("turnBegan", {
+        activePlayer: table.activePlayer,
+        cardsRemaining: table.engine.pack.length,
+      }); 
     }
-    
-    // Start a new turn
-    io.sockets.emit("turnBegan", {
-      activePlayer: table.activePlayer,
-      cardsRemaining: table.engine.pack.length,
-    }); 
   });
 });

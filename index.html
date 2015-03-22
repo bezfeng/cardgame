@@ -63,7 +63,7 @@
 </style>
 
 <script>
-  var socket = io.connect("http://76.187.225.128:8080");
+  var socket = io.connect("http://localhost:8080");
   
   socket.on("joinedTable", function(data){
     $('#textbox').val(data.message);
@@ -89,6 +89,7 @@
   
   socket.on("playerJoined", function(data){
     var newPlayer = data.newPlayer;
+    $('#textbox').val($('#textbox').val() + "\n" + newPlayer.name + " has just joined the table.");
     $('#targetPlayerList').append('<option value="'+newPlayer.id+'">'+newPlayer.name+'</option>');
   });
   
@@ -127,17 +128,15 @@
   })
   
   $('#playCardButton').click(function() {
-    if ($('#cardArea').find('.selected').length > 1)
+    if ($('#cardArea').find('.selected').length > 1) {
       alert("You can only play one card ಠ_ಠ");
-    else
-    {
-      if ($('#cardArea').find('.selected')[0])
-      {
+    } else {
+      if ($('#cardArea').find('.selected')[0]) {
         var shortCode = $('#cardArea').find('.selected')[0].getAttribute("value");
         console.log(shortCode);
         var targetPlayerId = $('#targetPlayerList').val();
         var guessCode = $('#guessList').val();
-        if (shortCode && targetPlayerId) {
+        if (shortCode) {
           socket.emit("playCard", { 
             cardCode: shortCode,
             targetPlayerId: targetPlayerId,
@@ -159,14 +158,9 @@
       $('#card1').removeClass("selected");
 
       console.log($(this).attr("value"));
-      if ($(this).attr("value") == "g")
-        $('#guardGuess').css("visibility", "visible");
-      else
-        $('#guardGuess').css("visibility", "hidden");
-      if ($(this).attr("value") == "g" || $(this).attr("value") == "c" || $(this).attr("value") == "d" || $(this).attr("value") == "h" || $(this).attr("value") == "m")
-        $('#targetList').css("visibility", "visible");
-      else
-        $('#targetList').css("visibility", "hidden");
+      
+      changeGuessVisibility($(this).attr("value"));
+      changeTargetVisibility($(this).attr("value"));
     });
 
     $('#card1').click(function(){
@@ -175,15 +169,27 @@
       $('#card0').removeClass("selected");
 
       console.log($(this).attr("value"));
-      if ($(this).attr("value") == "g")
-        $('#guardGuess').css("visibility", "visible");
-      else
-        $('#guardGuess').css("visibility", "hidden");
-      if ($(this).attr("value") == "g" || $(this).attr("value") == "c" || $(this).attr("value") == "d" || $(this).attr("value") == "h" || $(this).attr("value") == "m")
-        $('#targetList').css("visibility", "visible");
-      else
-        $('#targetList').css("visibility", "hidden");
+
+      changeGuessVisibility($(this).attr("value"));
+      changeTargetVisibility($(this).attr("value"));
     });
+  }
+  
+  function changeGuessVisibility(cardValue) {
+    if (cardValue == "g")
+      $('#guardGuess').css("visibility", "visible");
+    else
+      $('#guardGuess').css("visibility", "hidden");
+  }
+  
+  function changeTargetVisibility(cardValue) {
+    if (cardValue == "p" || cardValue == "sh" || cardValue == "s") {
+      $('#targetList').css("visibility", "hidden");
+      $('#targetPlayerList').val([]);
+    } else {
+      $('#targetList').css("visibility", "visible");
+      $('#targetPlayerList').selectedIndex = 0;
+    }
   }
 
 </script>
