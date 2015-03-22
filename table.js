@@ -68,9 +68,11 @@ Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
     revealString += this.players[0].name + " has a " + this.players[0].hand[0].name + " (" + this.players[0].hand[0].value +")\n";
     
     for (var i = 1; i < this.players.length; i++) {
-      revealString += this.players[i].name + " has a " + this.players[i].hand[0].name + " (" + this.players[i].hand[0].value +")\n";
-      if (this.players[i].hand[0].value > highestPlayer.hand[0].value) {
-        highestPlayer = this.players[i];
+      if (this.players[i].status != "lose") {
+        revealString += this.players[i].name + " has a " + this.players[i].hand[0].name + " (" + this.players[i].hand[0].value +")\n";
+        if (this.players[i].hand[0].value > highestPlayer.hand[0].value) {
+          highestPlayer = this.players[i];
+        }
       }
     }
     winner = highestPlayer;
