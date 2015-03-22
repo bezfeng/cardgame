@@ -67,7 +67,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     }
   }
 
-  var result = {message:"", courtierResult:null};
+  var result = {};
   result.message = "** " + sourcePlayer.name + " played " + card.name + " against " + targetPlayer.name + " **";
   
   if (targetImmune) {
@@ -82,7 +82,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     var targetPlayerCard = targetPlayer.hand[0];
     guessMessage = "** " + sourcePlayer.name + " guesses " + guess.name + " and is ";
     if (guess.shortCode == targetPlayerCard.shortCode) {
-      targetPlayer.status = "lose";
+      this.setPlayerLose(targetPlayer);
       this.discard.push(targetPlayerCard);
       guessMessage += "CORRECT!";
     } else {
@@ -104,14 +104,14 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     var sourcePlayerCard = sourcePlayer.hand[0];
     
     if (targetPlayerCard.value > sourcePlayerCard.value) {
-      setPlayerLose(sourcePlayer);
+      this.setPlayerLose(sourcePlayer);
     } else if (sourcePlayerCard.value < targetPlayerCard.value) {
-      setPlayerLose(targetPlayer);
+      this.setPlayerLose(targetPlayer);
     }
   }
   
   // Shugenja - invincible
-  if (card.shortCode == "s") {
+  if (card.shortCode == "sh") {
     sourcePlayer.status = "immune";
     this.immunePlayers.push(sourcePlayer);
   }
@@ -135,7 +135,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   
   // Princess - auto lose
   if (card.shortCode == "p") {
-    setPlayerLose(sourcePlayer);
+    this.setPlayerLose(sourcePlayer);
   }
   
   return result;

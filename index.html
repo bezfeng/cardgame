@@ -100,7 +100,7 @@
   });
 
   socket.on("courtierResult", function(data){
-    $('#textbox').val($('#textbox').val() + "\nTarget Player's hand: " + data.card);
+    $('#textbox').val($('#textbox').val() + "\nTarget Player's hand: " + data.card.name);
   })
   
   $('#playCardButton').click(function() {

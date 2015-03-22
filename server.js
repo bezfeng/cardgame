@@ -76,7 +76,7 @@ io.sockets.on('connection', function (socket) {
     io.sockets.emit("cardPlayed", {
       message: result.message,
     });
-    if (result.courtierHand)
+    if (result.courtierResult)
       socket.emit("courtierResult", {card: result.courtierResult});
     
     // Only send the hand to the corresponding player instead of a broadcast to prevent cheating. 

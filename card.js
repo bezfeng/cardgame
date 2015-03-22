@@ -26,7 +26,7 @@ function Card(shortCode) {
       this.name = "Diplomat"
       this.value = 3;
       break;
-    case "s":
+    case "sh":
       this.name = "Shugenja"
       this.value = 4;
       break;
@@ -60,7 +60,7 @@ Card.countInDeck = function(cardValue) {
 }
 
 Card.types = function() {
-  var array = ["g", "c", "d", "s", "h", "m", "s", "p"];
+  var array = ["g", "c", "d", "sh", "h", "m", "s", "p"];
   return array;
 }
 
