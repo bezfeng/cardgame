@@ -63,7 +63,7 @@
 </style>
 
 <script>
-  var socket = io.connect("http://localhost:8080");
+  var socket = io.connect("http://192.168.1.7:8080");
   
   socket.on("joinedTable", function(data){
     $('#textbox').val(data.message);
@@ -185,10 +185,8 @@
   function changeTargetVisibility(cardValue) {
     if (cardValue == "p" || cardValue == "sh" || cardValue == "s") {
       $('#targetList').css("visibility", "hidden");
-      $('#targetPlayerList').val([]);
     } else {
       $('#targetList').css("visibility", "visible");
-      $('#targetPlayerList').selectedIndex = 0;
     }
   }
 
