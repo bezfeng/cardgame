@@ -33,13 +33,13 @@ io.sockets.on('connection', function (socket) {
     // Double check player name is unique
     for (var i = 0; i < table.players.length; i++) {
       if (table.players[i].id == socket.id) {
-        socket.emit("error", {
+        socket.emit("gameError", {
           message: "You are already a member of this table.",
         });
         return;
       }
       if (table.players[i].name == data.playerName) {
-        socket.emit("error", {
+        socket.emit("gameError", {
           message: "Name is already in use, please choose a new one. Thanks!",
         });
         return;

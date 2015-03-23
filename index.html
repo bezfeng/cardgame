@@ -144,6 +144,12 @@
 
   socket.on("courtierResult", function(data){
     $('#textbox').val($('#textbox').val() + "\nTarget Player's hand: " + data.card.name);
+    $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
+  });
+
+  socket.on("gameError", function(data){
+    $('#textbox').val($('#textbox').val() + "\nError: " + data.message);
+    $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
   });
   
   $('#playCardButton').click(function() {
