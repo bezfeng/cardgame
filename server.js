@@ -79,9 +79,9 @@ io.sockets.on('connection', function (socket) {
   socket.on('playCard', function(data){
     var result = table.cardPlayed(data.targetPlayerId, socket.id, data);
     
-    io.sockets.emit("cardPlayed", {
+    emitToPlayersInTable("cardPlayed", {
       message: result.message,
-    });
+    }, table);
     
     if (result.courtierResult && !result.gameOver) {
       socket.emit("courtierResult", {card: result.courtierResult});
@@ -106,13 +106,20 @@ io.sockets.on('connection', function (socket) {
   socket.on('disconnect', function () {
     for (var i = 0; i < table.players.length; i++) {
       if (table.players[i].id == socket.id) {
+        console.log("Player "+table.players[i].name+" disconnected.");
         table.players.splice(i, 1);
       }
     }
     
-    socket.emit("updatePlayerList", {
+    emitToPlayersInTable("updatePlayerList", {
       activePlayer: table.activePlayer,
       players: table.players,
-    });
+    }, table);
   });
 });
+
+function emitToPlayersInTable(event, data, t){
+  for (var i = 0; i < t.players.length; i++) {
+    io.to(t.players[i].id).emit(event, data);
+  }
+}

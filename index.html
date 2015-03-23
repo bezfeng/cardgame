@@ -84,6 +84,7 @@
     addCardClickEvents();
     
     // Set up other players
+    $('#targetPlayerList').empty();
     var players = data.players;
     for (var i = 0; i < players.length; i++) {
       var player = players[i];
@@ -97,6 +98,31 @@
     var newPlayer = data.newPlayer;
     $('#textbox').val($('#textbox').val() + "\n" + newPlayer.name + " has just joined the table.");
     $('#targetPlayerList').append('<option value="'+newPlayer.id+'">'+newPlayer.name+'</option>');
+  });
+
+  socket.on("updatePlayerList", function(data){
+    console.log("updatePlayerList"+data.players);
+    $('#playerStatus').empty();
+    for (var i = 0; i<data.players.length; i++)
+    {
+      var status = data.players[i].status;
+      if (status != "")
+        status = "("+status+")";
+      if (data.players[i].id == data.activePlayer.id)
+        $('#playerStatus').append('<li style="font-weight: bold;">'+data.players[i].name+' '+status+'</li>');
+      else
+        $('#playerStatus').append('<li>'+data.players[i].name+' '+status+'</li>');
+    }
+
+    // Repopulate target list
+    $('#targetPlayerList').empty();
+    var players = data.players;
+    for (var i = 0; i < players.length; i++) {
+      var player = players[i];
+      if (player.id != socket.id) {
+        $('#targetPlayerList').append('<option value="'+player.id+'">'+player.name+'</option>');
+      }
+    }
   });
   
   socket.on("turnBegan", function(data){
