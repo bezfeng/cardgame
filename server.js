@@ -28,6 +28,24 @@ io.sockets.on('connection', function (socket) {
   socket.on('playerjoin', function(data){
     console.log("socket id: " + socket.id);
     console.log("socket data received: " + data.playerName);
+    
+    // Double check player is not already in table
+    // Double check player name is unique
+    for (var i = 0; i < table.players.length; i++) {
+      if (table.players[i].id == socket.id) {
+        socket.emit("error", {
+          message: "You are already a member of this table.",
+        });
+        return;
+      }
+      if (table.players[i].name == data.playerName) {
+        socket.emit("error", {
+          message: "Name is already in use, please choose a new one. Thanks!",
+        });
+        return;
+      }
+    }
+    
     var newPlayer = table.addPlayer(socket.id, data.playerName);
 
     // Tell all other players to add a new player to their UI
