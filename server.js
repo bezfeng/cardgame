@@ -79,7 +79,8 @@ io.sockets.on('connection', function (socket) {
       io.to(player.id).emit("turnBegan", {
         activePlayer: table.activePlayer,
         cardsRemaining: table.engine.pack.length,
-      }); 
+        players: table.players,
+      });
     }
   });
 });

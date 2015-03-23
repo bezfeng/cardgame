@@ -3,6 +3,8 @@ var Card = require("./card.js");
 // Engine object
 function Engine() {
   this.reset();
+  this.lostStatus = "Lost";
+  this.immuneStatus = "Immune";
 }
 
 Engine.prototype._createPack = function() {
@@ -63,6 +65,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     if (immunePlayer.id == sourcePlayer.id) {
       console.log("removing " + sourcePlayer.name + " from immunity list");
       this.immunePlayers.splice(i, 1);
+      sourcePlayer.status = "";
     }
   }
   
@@ -131,7 +134,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   
   // Shugenja - invincible
   if (card.shortCode == "sh") {
-    sourcePlayer.status = "immune";
+    sourcePlayer.status = this.immuneStatus;
     this.immunePlayers.push(sourcePlayer);
     console.log("list of immune players is now " + JSON.stringify(this.immunePlayers));
   }
@@ -175,7 +178,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
 
 Engine.prototype.setPlayerLose = function(player) {
   console.log(player.name + " has just lost");
-  player.status = "lose";
+  player.status = this.lostStatus;
   var card = player.hand.pop();
   if (card)
     this.discard.push(card);

@@ -73,7 +73,7 @@ Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
     revealString += this.players[0].name + " has a " + this.players[0].hand[0].name + " (" + this.players[0].hand[0].value +")\n";
     
     for (var i = 1; i < this.players.length; i++) {
-      if (this.players[i].status != "lose") {
+      if (this.players[i].status != this.engine.lostStatus) {
         revealString += this.players[i].name + " has a " + this.players[i].hand[0].name + " (" + this.players[i].hand[0].value +")\n";
         if (this.players[i].hand[0].value > highestPlayer.hand[0].value) {
           highestPlayer = this.players[i];
@@ -87,7 +87,7 @@ Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
   // Game is over if everybody else has been knocked out.
   var nonLosers = [];
   for (var i = 0; i < this.players.length; i++) {
-    if (this.players[i].status != "lose") {
+    if (this.players[i].status != this.engine.lostStatus) {
       nonLosers.push(this.players[i]);
     }
   }
@@ -131,7 +131,7 @@ Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
       newIndex = 0;
     }
     
-    while (this.players[newIndex].status == "lose" && newIndex != sourceIndex) {
+    while (this.players[newIndex].status == this.engine.lostStatus && newIndex != sourceIndex) {
       newIndex++;
       if (newIndex == this.players.length) {
         newIndex = 0;
