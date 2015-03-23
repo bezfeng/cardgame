@@ -104,12 +104,7 @@ io.sockets.on('connection', function (socket) {
   });
   
   socket.on('disconnect', function () {
-    for (var i = 0; i < table.players.length; i++) {
-      if (table.players[i].id == socket.id) {
-        console.log("Player "+table.players[i].name+" disconnected.");
-        table.players.splice(i, 1);
-      }
-    }
+    table.removePlayer(socket.id);
     
     emitToPlayersInTable("updatePlayerList", {
       activePlayer: table.activePlayer,

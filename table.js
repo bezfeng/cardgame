@@ -29,6 +29,19 @@ Table.prototype.addPlayer = function(playerID, playerName) {
   return player;
 };
 
+Table.prototype.removePlayer = function(playerId) {
+  for (var i = 0; i < table.players.length; i++) {
+    if (table.players[i].id == playerId) {
+      table.players.splice(i, 1);
+      if (i == this.getPlayerIndex(this.activePlayer.id)) {
+        var newIndex = this.findNextActivePlayer(sourceIndex);
+        this.activePlayer = this.players[newIndex];    
+      }
+      break;
+    }
+  }
+}
+
 Table.prototype.getPlayer = function(playerId) {
   var player = null;
   for(var i = 0; i < this.players.length; i++) {
@@ -47,6 +60,25 @@ Table.prototype.getPlayerIndex = function(playerId) {
     }
   }
 };
+
+Table.prototype.findNextActivePlayer = function(currentPlayerIndex) {
+  // Find the index of the current player and increment to get the next player
+  var newIndex = currentPlayerIndex + 1;
+
+  // Loop back to the first player if we've reached the end of the list
+  if (newIndex == this.players.length) {
+    newIndex = 0;
+  }
+  
+  while (this.players[newIndex].status == this.engine.lostStatus && newIndex != sourceIndex) {
+    newIndex++;
+    if (newIndex == this.players.length) {
+      newIndex = 0;
+    }
+  } 
+  
+  return newIndex;
+}
 
 Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
   var sourceIndex = this.getPlayerIndex(sourcePlayerId);
@@ -123,20 +155,7 @@ Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
     
     this.activePlayer = winner;
   } else {
-    // Find the index of the current player and increment to get the next player
-    var newIndex = sourceIndex + 1;
-  
-    // Loop back to the first player if we've reached the end of the list
-    if (newIndex == this.players.length) {
-      newIndex = 0;
-    }
-    
-    while (this.players[newIndex].status == this.engine.lostStatus && newIndex != sourceIndex) {
-      newIndex++;
-      if (newIndex == this.players.length) {
-        newIndex = 0;
-      }
-    } 
+    var newIndex = this.findNextActivePlayer(sourceIndex);
     this.activePlayer = this.players[newIndex];
   }
   
