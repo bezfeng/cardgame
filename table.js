@@ -30,9 +30,9 @@ Table.prototype.addPlayer = function(playerID, playerName) {
 };
 
 Table.prototype.removePlayer = function(playerId) {
-  for (var i = 0; i < table.players.length; i++) {
-    if (table.players[i].id == playerId) {
-      table.players.splice(i, 1);
+  for (var i = 0; i < this.players.length; i++) {
+    if (this.players[i].id == playerId) {
+      this.players.splice(i, 1);
       if (i == this.getPlayerIndex(this.activePlayer.id)) {
         var newIndex = this.findNextActivePlayer(sourceIndex);
         this.activePlayer = this.players[newIndex];    
