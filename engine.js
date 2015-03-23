@@ -58,15 +58,21 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   this.discard.push(card);
   
   // Remove the sourcePlayer from the immune list if they were previously on it.
+  for (var i = 0; i < this.immunePlayers.length; i++) {
+    var immunePlayer = this.immunePlayers[i];
+    if (immunePlayer.id == sourcePlayer.id) {
+      console.log("removing " + sourcePlayer.name + " from immunity list");
+      this.immunePlayers.splice(i, 1);
+    }
+  }
+  
   // If targetPlayer is on the immune list, do nothing this turn.
   var targetImmune = false;
   if (targetPlayer) {
     for (var i = 0; i < this.immunePlayers.length; i++) {
-      var player = this.immunePlayers[i];
-      if (player.id == sourcePlayer.id) {
-        this.immunePlayers.splice(i, 1);
-      }
-      if (player.id == targetPlayer.id) {
+      var immunePlayer = this.immunePlayers[i];
+      if (immunePlayer.id == targetPlayer.id) {
+        console.log("found " targetPlayer.id + " in the immunity list, do nothing. womp womp.");
         targetImmune = true;
       }
     } 
@@ -127,6 +133,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   if (card.shortCode == "sh") {
     sourcePlayer.status = "immune";
     this.immunePlayers.push(sourcePlayer);
+    console.log("list of immune players is now " + JSON.stringify(this.immunePlayers));
   }
   
   // Hatamoto - targetPlayer drops all cards and picks a new one
