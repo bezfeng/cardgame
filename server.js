@@ -102,4 +102,17 @@ io.sockets.on('connection', function (socket) {
       });
     }
   });
+  
+  socket.on('disconnect', function () {
+    for (var i = 0; i < table.players.length; i++) {
+      if (table.players[i].id == socket.id) {
+        table.players.splice(i, 1);
+      }
+    }
+    
+    socket.emit("updatePlayerList", {
+      activePlayer: table.activePlayer,
+      players: table.players,
+    });
+  });
 });
