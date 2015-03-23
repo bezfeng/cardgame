@@ -72,7 +72,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
     for (var i = 0; i < this.immunePlayers.length; i++) {
       var immunePlayer = this.immunePlayers[i];
       if (immunePlayer.id == targetPlayer.id) {
-        console.log("found " targetPlayer.id + " in the immunity list, do nothing. womp womp.");
+        console.log("found " + targetPlayer.id + " in the immunity list, do nothing. womp womp.");
         targetImmune = true;
       }
     } 
