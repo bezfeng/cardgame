@@ -151,7 +151,7 @@ Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
       }
     }
     if (this.pack.length == 0) {
-      targerPlayer.hand.push(this.secretCard);
+      targetPlayer.hand.push(this.secretCard);
     } else {
       targetPlayer.hand.push(this.pack.pop()); 
     }

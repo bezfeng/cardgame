@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="clientconfig.js"></script>
   </head>
   <body>
     <div id="wrap" class="container-fluid">
@@ -16,8 +17,15 @@
         <input type="text" id="playerName">
         <button id="joinButton">Join Table</button>
       </div>
-      <div>
-        <textarea id="textbox" rows="10" cols="50"></textarea>
+      <div class="row">
+        <div class="col-sm-4">
+          <textarea id="textbox" rows="10" cols="50"></textarea>
+        </div>
+        <div class="col-sm-4">
+          <h4>Player List:</h4>
+          <ul id="playerStatus">
+          </ul>
+        </div>
       </div>
       <div id = "actionArea">
         <button id="playCardButton" disabled="true">Play Card</button>
@@ -63,8 +71,6 @@
 </style>
 
 <script>
-  var socket = io.connect("http://192.168.1.7:8080");
-  
   socket.on("joinedTable", function(data){
     $('#textbox').val(data.message);
     
@@ -103,6 +109,19 @@
     
     $('#textbox').val($('#textbox').val() + "\n\nNew turn, active player is " + data.activePlayer.name);
     $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
+
+    console.log(data.players);
+    $('#playerStatus').empty();
+    for (var i = 0; i<data.players.length; i++)
+    {
+      var status = data.players[i].status;
+      if (status != "")
+        status = "("+status+")";
+      if (data.players[i].id == data.activePlayer.id)
+        $('#playerStatus').append('<li style="font-weight: bold;">'+data.players[i].name+' '+status+'</li>');
+      else
+        $('#playerStatus').append('<li>'+data.players[i].name+' '+status+'</li>');
+    }
   });
   
   socket.on("turnEnded", function(data){
@@ -125,7 +144,7 @@
 
   socket.on("courtierResult", function(data){
     $('#textbox').val($('#textbox').val() + "\nTarget Player's hand: " + data.card.name);
-  })
+  });
   
   $('#playCardButton').click(function() {
     if ($('#cardArea').find('.selected').length > 1) {

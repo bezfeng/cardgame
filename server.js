@@ -53,6 +53,7 @@ io.sockets.on('connection', function (socket) {
     if (table.players.length == 1) {
       socket.emit("turnBegan", {
         activePlayer: table.activePlayer,
+        players: table.players,
       });   
     }
   });
