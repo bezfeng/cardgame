@@ -44,6 +44,9 @@ Engine.prototype.drawCard = function(player) {
 
 Engine.prototype.play = function(targetPlayer, sourcePlayer, action) {
   var card = new Card(action.cardCode);
+
+  if (card.shortCode == 'sh' || card.shortCode == 's' || card.shortCode == 'p')
+    targetPlayer = undefined;
   
   // Remove card from player's hand
   for (var i = 0; i < sourcePlayer.hand.length; i++) {
@@ -167,7 +170,8 @@ Engine.prototype.setPlayerLose = function(player) {
   console.log(player.name + " has just lost");
   player.status = "lose";
   var card = player.hand.pop();
-  this.discard.push(card);
+  if (card)
+    this.discard.push(card);
   return card; 
 }
 
