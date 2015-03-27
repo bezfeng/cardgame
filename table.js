@@ -21,7 +21,7 @@ Table.prototype.addPlayer = function(playerID, playerName) {
   // If this is the first player to join, assume for now he gets to start
   // TODO: rework starting player logic
   if (this.players.length === 1) {
-    console.log("setting starting player as" + player.name)
+    console.log("setting starting player as " + player.name)
     this.engine.drawCard(player);
     this.activePlayer = player;
   }
@@ -83,15 +83,22 @@ Table.prototype.findNextActivePlayer = function(currentPlayerIndex) {
 Table.prototype.cardPlayed = function(targetPlayerId, sourcePlayerId, action) {
   var sourceIndex = this.getPlayerIndex(sourcePlayerId);
   var sourcePlayer = this.players[sourceIndex];
-  
   var targetIndex;
   var targetPlayer;
+  var result = {};
+
   if (targetPlayerId && targetPlayerId != null) {
     targetIndex = this.getPlayerIndex(targetPlayerId);
     targetPlayer = this.players[targetIndex];
   }
+
+  if (targetPlayer && targetPlayer.status == this.engine.lostStatus)
+  {
+    result.message = "Can't target players that are out";
+    return result;
+  }
   
-  var result = this.engine.play(targetPlayer, sourcePlayer, action);
+  result = this.engine.play(targetPlayer, sourcePlayer, action);
   
   // Game over checking --------------------------------------------
   
