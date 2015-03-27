@@ -34,7 +34,7 @@ Table.prototype.removePlayer = function(playerId) {
     if (this.players[i].id == playerId) {
       this.players.splice(i, 1);
       if (i == this.getPlayerIndex(this.activePlayer.id)) {
-        var newIndex = this.findNextActivePlayer(sourceIndex);
+        var newIndex = this.findNextActivePlayer(i);
         this.activePlayer = this.players[newIndex];    
       }
       break;
@@ -70,7 +70,7 @@ Table.prototype.findNextActivePlayer = function(currentPlayerIndex) {
     newIndex = 0;
   }
   
-  while (this.players[newIndex].status == this.engine.lostStatus && newIndex != sourceIndex) {
+  while (this.players[newIndex].status == this.engine.lostStatus && newIndex != currentPlayerIndex) {
     newIndex++;
     if (newIndex == this.players.length) {
       newIndex = 0;
