@@ -12,23 +12,23 @@
   <body>
     <div id="wrap" class="container-fluid">
       <h3>Card Game</h3>
-      <div>
+      <div style="margin-bottom:10px">
         <label>Player Name</label>
         <input type="text" id="playerName">
         <button id="joinButton">Join Table</button>
       </div>
       <div class="row">
-        <div class="col-sm-4">
-          <textarea id="textbox" rows="10" cols="50"></textarea>
+        <div class="col-sm-6">
+          <textarea id="textbox" style="width:100%; height:300px;"></textarea>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
           <h4>Player List:</h4>
           <ul id="playerStatus">
           </ul>
         </div>
       </div>
       <div id = "actionArea">
-        <button id="playCardButton" disabled="true">Play Card</button>
+        <button id="playCardButton" class="disabled" disabled="true">Play Card</button>
         <div id="targetList" style="visibility: hidden">
           <label>Target:</label>
           <select id="targetPlayerList"></select>
@@ -49,6 +49,11 @@
       <h4>Hand:</h4>
       <div id="cardArea" class="row">
       </div>
+      <h4>Discard:</h4>
+      <div class="row">
+        <ul id="discardList">
+        </ul>
+      </div>
     </div>
   </body>
 </html>
@@ -68,18 +73,29 @@
   .selected {
     box-shadow: 0px 0px 30px rgba(0,0,0,0.3) inset, 0px 0px 20px rgba(82, 168, 236, 0.9);
   }
+  
+  button {
+    cursor: auto;
+  }
+  
+  button.disabled {
+    color: grey;
+    cursor: default;
+    opacity: 0.4;
+  }
 </style>
 
 <script>
-  socket.on("joinedTable", function(data){
+  socket.on("joinedTable", function(data) {
     $('#textbox').val(data.message);
+    $('#playerName').prop("disabled", true);
     
     // Set up the starting cards
     var hand = data.hand;
     for (var i = 0; i < hand.length; i++) {
       var name = hand[i].name;
       var shortCode = hand[i].shortCode;
-      $('#cardArea').append('<div id=card'+i+' class="cardInput col-xs-2" name="card" value="'+shortCode+'">' + name + '</div>');
+      $('#cardArea').append('<div id=card' + i + ' class="cardInput col-xs-2" name="card" value="' + shortCode + '">' + name + '</div>');
     }
     addCardClickEvents();
     
@@ -91,28 +107,38 @@
       if (player.id != socket.id) {
         $('#targetPlayerList').append('<option value="'+player.id+'">'+player.name+'</option>');
       }
+      if (player.id == data.activePlayer.id) {
+        $('#playerStatus').append('<li style="font-weight: bold;">' + player.name + '</li>');
+      } else {
+        $('#playerStatus').append('<li>' + player.name + '</li>');
+      }
     }
   });
   
-  socket.on("playerJoined", function(data){
+  socket.on("playerJoined", function(data) {
     var newPlayer = data.newPlayer;
-    $('#textbox').val($('#textbox').val() + "\n" + newPlayer.name + " has just joined the table.");
-    $('#targetPlayerList').append('<option value="'+newPlayer.id+'">'+newPlayer.name+'</option>');
+    if (newPlayer.id != socket.id) {
+      $('#textbox').val($('#textbox').val() + "\n" + newPlayer.name + " has just joined the table.");
+      $('#targetPlayerList').append('<option value="' + newPlayer.id + '">' + newPlayer.name + '</option>');
+      $('#playerStatus').append('<li>' + newPlayer.name + '</li>');
+    }
   });
 
-  socket.on("updatePlayerList", function(data){
-    console.log("updatePlayerList"+data.players);
+  socket.on("updatePlayerList", function(data) {
+    console.log("updatePlayerList" + data.players);
     $('#playerStatus').empty();
-    for (var i = 0; i<data.players.length; i++)
-    {
+    for (var i = 0; i < data.players.length; i++) {
       var status = data.players[i].status;
       if (status != "")
-        status = "("+status+")";
+        status = "(" + status + ")";
       if (data.players[i].id == data.activePlayer.id)
-        $('#playerStatus').append('<li style="font-weight: bold;">'+data.players[i].name+' '+status+'</li>');
+        $('#playerStatus').append('<li style="font-weight: bold;">' + data.players[i].name + ' ' + status + '</li>');
       else
-        $('#playerStatus').append('<li>'+data.players[i].name+' '+status+'</li>');
+        $('#playerStatus').append('<li>' + data.players[i].name + ' ' + status + '</li>');
     }
+    
+    // Message the disconnect
+    $('#textbox').val($('#textbox').val() + "\n" + data.disconnectedPlayer.name + " has left the table.");
 
     // Repopulate target list
     $('#targetPlayerList').empty();
@@ -120,7 +146,7 @@
     for (var i = 0; i < players.length; i++) {
       var player = players[i];
       if (player.id != socket.id) {
-        $('#targetPlayerList').append('<option value="'+player.id+'">'+player.name+'</option>');
+        $('#targetPlayerList').append('<option value="' + player.id + '">' + player.name + '</option>');
       }
     }
   });
@@ -128,9 +154,12 @@
   socket.on("turnBegan", function(data){
     // Enable the play card button if you are the active player.
     if (socket.id == data.activePlayer.id) {
+      $('#playCardButton').toggleClass("disabled", false);
       $('#playCardButton').prop("disabled", false);
+      
     } else {
       $('#playCardButton').prop("disabled", true);
+      $('#playCardButton').toggleClass("disabled", true);
     }
     
     $('#textbox').val($('#textbox').val() + "\n\nNew turn, active player is " + data.activePlayer.name);
@@ -150,7 +179,7 @@
     }
   });
   
-  socket.on("turnEnded", function(data){
+  socket.on("turnEnded", function(data) {
     console.log(data.hand);
     $('#cardArea').empty();
     var hand = data.hand;
@@ -163,17 +192,17 @@
     addCardClickEvents();
   });
   
-  socket.on("cardPlayed", function(data){
+  socket.on("cardPlayed", function(data) {
     $('#textbox').val($('#textbox').val() + "\n" + data.message);
     $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
   });
 
-  socket.on("courtierResult", function(data){
+  socket.on("courtierResult", function(data) {
     $('#textbox').val($('#textbox').val() + "\nTarget Player's hand: " + data.card.name);
     $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
   });
 
-  socket.on("gameError", function(data){
+  socket.on("gameError", function(data) {
     $('#textbox').val($('#textbox').val() + "\nError: " + data.message);
     $('#textbox').scrollTop($('#textbox')[0].scrollHeight);
   });
@@ -198,7 +227,7 @@
     }
   });
 
-  $('#joinButton').click(function(){
+  $('#joinButton').click(function() {
     socket.emit("playerjoin", { playerName:$('#playerName').val() });
   });
 

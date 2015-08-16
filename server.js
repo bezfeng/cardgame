@@ -54,9 +54,7 @@ io.sockets.on('connection', function (socket) {
     for (var i = 0; i < table.players.length; i++) {
       var player = table.players[i];
       playerList = playerList + player.name + ", ";
-      if (player.id != socket.id) {
-        io.to(player.id).emit("playerJoined", { newPlayer: newPlayer })
-      }
+      io.to(player.id).emit("playerJoined", { newPlayer: newPlayer })
     }
     
     // Configure the new player's initial UI
@@ -64,6 +62,7 @@ io.sockets.on('connection', function (socket) {
       message: "Joined Table: " + table.name + "\nPlayers: " + playerList + "\nActive player is " + table.activePlayer.name,
       hand: table.getPlayer(socket.id).hand,
       players: table.players,
+      activePlayer: table.activePlayer,
     });
     
     // Let the first player know that he is the active player
@@ -104,11 +103,13 @@ io.sockets.on('connection', function (socket) {
   });
   
   socket.on('disconnect', function () {
+    var disconnectedPlayer = table.getPlayer(socket.id);
     table.removePlayer(socket.id);
-    
+        
     emitToPlayersInTable("updatePlayerList", {
       activePlayer: table.activePlayer,
       players: table.players,
+      disconnectedPlayer: disconnectedPlayer,
     }, table);
   });
 });
